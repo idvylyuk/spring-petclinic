@@ -20,6 +20,6 @@ CMD [ "java", "-jar", "/app/petclinic.jar" ]
 # ||| potential upgrade:
 # adding user
 # .dockerignore don't need -> COPY only what needed
-# mount .m2 repository
+# mount .m2 repository 
 
 
