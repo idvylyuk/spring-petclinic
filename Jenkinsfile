@@ -2,16 +2,17 @@ pipeline{
     agent{
         label "ubuntu-agent"
     }
+    tools {
+        gradle 'gradle-8.10.2' 
+    }
     stages{
         stage("Test & Build"){
             when {
                 branch 'main'
             }
             steps{
-                sh 'ls -a'
                 echo "===================== Running Checkstyle ====================="
                 sh './gradlew checkstyleMain checkstyleTest'
-                archiveArtifacts artifacts: 'build/reports/checkstyle/main.html', fingerprint: true
             }
         }
 
