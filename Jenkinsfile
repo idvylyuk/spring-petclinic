@@ -4,6 +4,7 @@ pipeline{
     }
     environment {
         NEXUS_URL = 'http://10.0.2.2:8081/repository/maven-central/'
+        NEXUS_PASSWORD = credentials('NEXUS_PASSWORD')
     }
     tools {
         gradle 'gradle-8.10.2' 
