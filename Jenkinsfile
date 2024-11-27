@@ -19,6 +19,11 @@ pipeline{
                 echo "===================== Running Checkstyle ====================="
                 sh './gradlew checkstyleMain checkstyleTest'
                 archiveArtifacts artifacts: 'build/reports/checkstyle/main.html', fingerprint: true
+                echo "===================== Running Tests ====================="
+                sh "./gradlew test"
+                echo "===================== Packaging ====================="
+                sh './gradlew build -x test'
+                archiveArtifacts artifacts: "build/libs/*.jar", fingerprint: true
             }
         }
 
