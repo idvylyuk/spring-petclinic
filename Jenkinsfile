@@ -42,19 +42,18 @@ pipeline{
             }
             steps {
                     script {
-                    def DOCKER_TAG = env.GIT_COMMIT.take(7)
-                    def DOCKER_REPO
+                    env.DOCKER_TAG = env.GIT_COMMIT.take(7)
                     if (env.BRANCH_NAME == 'main') {
-                        DOCKER_REPO = "${DOCKER_MAIN_REPO}"
+                        env.DOCKER_REPO = "${DOCKER_MAIN_REPO}"
                     } else if (env.BRANCH_NAME ==~ /^PR-.*/) {
-                        DOCKER_REPO = "${DOCKER_MR_REPO}"
+                        env.DOCKER_REPO = "${DOCKER_MR_REPO}"
                     }
-                    echo "Shortened Git Commit: ${DOCKER_TAG}"
+                    echo "Shortened Git Commit: ${env.DOCKER_TAG}"
                 }
-                sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} -f Dockerfile ."
-                sh "docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} ${DOCKER_REPO}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
-                sh "echo ${NEXUS_PASSWORD} | docker login -u ${NEXUS_USERNAME} --password-stdin ${DOCKER_REPO}"
-                sh "docker push ${DOCKER_REPO}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
+                sh "docker build -t ${DOCKER_IMAGE}:${env.DOCKER_TAG} -f Dockerfile ."
+                sh "docker tag ${DOCKER_IMAGE_NAME}:${env.DOCKER_TAG} ${env.DOCKER_REPO}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
+                sh "echo ${NEXUS_PASSWORD} | docker login -u ${NEXUS_USERNAME} --password-stdin ${env.DOCKER_REPO}"
+                sh "docker push ${env.DOCKER_REPO}/${DOCKER_IMAGE_NAME}:${env.DOCKER_TAG}"
             }
 
         }
