@@ -3,13 +3,15 @@ pipeline{
         label "ubuntu-agent"
     }
     stages{
-        stage("A"){
+        stage("Test & Build"){
             when {
                 branch 'main'
             }
             steps{
-                echo "MAIN BRANCH"
-                sh "printenv"
+                sh 'ls -a'
+                echo "===================== Running Checkstyle ====================="
+                sh './gradlew checkstyleMain checkstyleTest'
+                archiveArtifacts artifacts: 'build/reports/checkstyle/main.html', fingerprint: true
             }
         }
 
