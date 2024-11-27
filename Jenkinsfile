@@ -2,6 +2,13 @@ pipeline{
     agent{
         label "ubuntu-agent"
     }
+    when {
+        anyOf {
+            branch 'main'
+            changeRequest()
+        }
+        beforeAgent true
+    }
     stages{
         stage("A"){
             when {
@@ -18,7 +25,7 @@ pipeline{
                 changeRequest()
             }
             steps {
-                echo "PR"
+                echo "PR TEST"
                 sh "printenv"
             }
         }
