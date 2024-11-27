@@ -2,6 +2,9 @@ pipeline{
     agent{
         label "ubuntu-agent"
     }
+    environment {
+        NEXUS_URL = 'http://10.0.2.2:8081/repository/maven-central/'
+    }
     tools {
         gradle 'gradle-8.10.2' 
     }
@@ -13,6 +16,7 @@ pipeline{
             steps{
                 echo "===================== Running Checkstyle ====================="
                 sh './gradlew checkstyleMain checkstyleTest'
+                archiveArtifacts artifacts: 'build/reports/checkstyle/main.html', fingerprint: true
             }
         }
 
