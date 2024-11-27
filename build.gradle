@@ -50,7 +50,7 @@ tasks.register('publishToNexus') {
 repositories {
   repositories {
     maven {
-        url "http://localhost:8081/repository/maven-central/"
+        url System.getenv("NEXUS_URL") 
         allowInsecureProtocol = true
         credentials {
             username = "admin"
