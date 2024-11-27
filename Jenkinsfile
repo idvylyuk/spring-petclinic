@@ -18,7 +18,7 @@ pipeline{
                 changeRequest()
             }
             steps {
-                echo "PR TEST"
+                echo "PR TEST 2"
                 sh "printenv"
             }
         }
