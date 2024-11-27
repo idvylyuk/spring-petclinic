@@ -24,8 +24,10 @@ pipeline{
                 echo "===================== Packaging ====================="
                 sh './gradlew build -x test'
                 archiveArtifacts artifacts: "build/libs/*.jar", fingerprint: true
-                def shortCommit = env.GIT_COMMIT.take(6)
-                echo "Shortened Git Commit: ${shortCommit}"
+                script {
+                    def shortCommit = env.GIT_COMMIT.take(6)
+                    echo "Shortened Git Commit: ${shortCommit}"
+                }
             }
         }
 
@@ -34,8 +36,10 @@ pipeline{
                 changeRequest()
             }
             steps {
-                def shortCommit = env.GIT_COMMIT.take(6)
-                echo "Shortened Git Commit: ${shortCommit}"
+                script {
+                    def shortCommit = env.GIT_COMMIT.take(6)
+                    echo "Shortened Git Commit: ${shortCommit}"
+                }
                 sh "printenv"
             }
         }
