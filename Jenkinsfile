@@ -54,17 +54,18 @@ pipeline{
             sh "docker build -t ${DOCKER_IMAGE}:${env.DOCKER_TAG} -f ${env.DOCKERFILE} ."
             sh "docker tag ${DOCKER_IMAGE}:${env.DOCKER_TAG} ${env.DOCKER_REPO}/${DOCKER_IMAGE}:${DOCKER_TAG}"
             withCredentials([usernamePassword(credentialsId: 'nexus-creds', passwordVariable: 'password', usernameVariable: 'username')]) {
-                sh '''
-                    echo ${password} | docker login -u ${username} --password-stdin ${env.DOCKER_REPO}
-                '''
-            }
+                    sh '''
+                        echo $password | docker login -u $username --password-stdin ${env.DOCKER_REPO}
+                    '''
+                }
 
             sh 'docker login -u $NEXUS_USER -p $NEXUS_PASSWORD ${env.DOCKER_REPO}'
             sh "docker push ${env.DOCKER_REPO}/${DOCKER_IMAGE}:${env.DOCKER_TAG}"
            }
            post {
             always {
-                sh "docker system prune -y"
+                sh "docker system prune -f"
+                sh "docker logout"
             }
            }
 
