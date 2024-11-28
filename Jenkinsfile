@@ -54,8 +54,9 @@ pipeline{
             sh "docker build -t ${DOCKER_IMAGE}:${env.DOCKER_TAG} -f ${env.DOCKERFILE} ."
             sh "docker tag ${DOCKER_IMAGE}:${env.DOCKER_TAG} ${env.DOCKER_REPO}/${DOCKER_IMAGE}:${DOCKER_TAG}"
             withCredentials([usernamePassword(credentialsId: 'nexus-creds', passwordVariable: 'password', usernameVariable: 'username')]) {
-                    sh '''
-                        echo $password | docker login -u $username --password-stdin ${env.DOCKER_REPO}
+                     sh '''
+                        set +x
+                        echo $password | docker login -u $username --password-stdin $DOCKER_REPO
                     '''
                 }
 
@@ -64,7 +65,7 @@ pipeline{
            }
            post {
             always {
-                sh "docker system prune -f"
+                sh "docker rmi \$(docker images | grep ${DOCKER_IMAGE} | awk '{print \$3}')" || true
                 sh "docker logout"
             }
            }
