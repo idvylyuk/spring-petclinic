@@ -15,23 +15,23 @@ pipeline{
         gradle 'gradle-8.10.2' 
     }
     stages{
-        // stage("Test & Build"){
-        //     when {
-        //         branch 'main'
-        //     }
-        //     steps{
-        //         sh 'printenv'
-        //         echo "===================== Running Checkstyle ====================="
-        //         sh './gradlew checkstyleMain checkstyleTest'
-        //         archiveArtifacts artifacts: 'build/reports/checkstyle/main.html', fingerprint: true
-        //         echo "===================== Running Tests ====================="
-        //         sh "./gradlew test"
-        //         echo "===================== Packaging ====================="
-        //         sh './gradlew build -x test'
-        //         archiveArtifacts artifacts: "build/libs/*.jar", fingerprint: true
+        stage("Test & Build"){
+            when {
+                changeRequest()
+            }
+            steps{
+                sh 'printenv'
+                echo "===================== Running Checkstyle ====================="
+                sh './gradlew checkstyleMain checkstyleTest'
+                archiveArtifacts artifacts: 'build/reports/checkstyle/main.html', fingerprint: true
+                echo "===================== Running Tests ====================="
+                sh "./gradlew test"
+                echo "===================== Packaging ====================="
+                sh './gradlew build -x test'
+                archiveArtifacts artifacts: "build/libs/*.jar", fingerprint: true
 
-        //     }
-        // }
+            }
+        }
 
         stage("Docker build"){
             when {
@@ -63,7 +63,6 @@ pipeline{
     post{
         success{
             echo "========pipeline executed successfully ======="
-            echo "======== DOCKER ======="
         }
         failure{
             echo "========pipeline execution failed========"
