@@ -5,7 +5,6 @@ pipeline{
     environment {
         NEXUS_URL = 'http://10.0.2.2:8081/repository/maven-central/'
         NEXUS_USER = "admin"
-        NEXUS_PASSWORD = credentials('NEXUS_PASSWORD')
         DOCKER_MR_REPO = "10.0.2.2:8082"
         DOCKER_MAIN_REPO = "10.0.2.2:8083"
         DOCKER_IMAGE = "spring-petclinic"
@@ -54,8 +53,20 @@ pipeline{
                 }
             sh "docker build -t ${DOCKER_IMAGE}:${env.DOCKER_TAG} -f ${env.DOCKERFILE} ."
             sh "docker tag ${DOCKER_IMAGE}:${env.DOCKER_TAG} ${env.DOCKER_REPO}/${DOCKER_IMAGE}:${DOCKER_TAG}"
-            sh "docker login -u ${NEXUS_USER} -p $NEXUS_PASSWORD ${env.DOCKER_REPO}"
+            withCredentials([string(credentialsId: 'NEXUS_PASSWORD', variable: 'NEXUS_PASSWORD')]) {
+                sh '''
+                set +x
+                    echo $NEXUS_PASSWORD | docker login -u $NEXUS_USER --password-stdin ${env.DOCKER_REPO}
+                '''
+            }
+
+            sh 'docker login -u $NEXUS_USER -p $NEXUS_PASSWORD ${env.DOCKER_REPO}'
             sh "docker push ${env.DOCKER_REPO}/${DOCKER_IMAGE}:${env.DOCKER_TAG}"
+           }
+           post {
+            success {
+                sh "docker system prune"
+            }
            }
 
         }
