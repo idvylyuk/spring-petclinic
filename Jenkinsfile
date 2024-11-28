@@ -60,15 +60,19 @@ pipeline{
                     '''
                 }
 
-            sh 'docker login -u $NEXUS_USER -p $NEXUS_PASSWORD ${env.DOCKER_REPO}'
             sh "docker push ${env.DOCKER_REPO}/${DOCKER_IMAGE}:${env.DOCKER_TAG}"
            }
            post {
-            always {
-                sh "docker rmi \$(docker images | grep ${DOCKER_IMAGE} | awk '{print \$3}')" || true
-                sh "docker logout"
+                always {
+                    script {
+                        try {
+                            sh "docker rmi \$(docker images | grep ${DOCKER_IMAGE} | awk '{print \$3}')"
+                        } catch (e) {
+                            echo "An error occurred: ${e}"
+                        }
+                    }
+                }
             }
-           }
 
         }
     }
