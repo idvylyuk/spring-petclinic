@@ -45,16 +45,18 @@ pipeline{
                     env.DOCKER_TAG = env.GIT_COMMIT.take(7)
                     if (env.BRANCH_NAME == 'main') {
                         env.DOCKER_REPO = "${DOCKER_MAIN_REPO}"
+                        env.DOCKERFILE = "Dockerfile --build-arg HOME=$HOME"
                     } else if (env.BRANCH_NAME ==~ /^PR-.*/) {
                         env.DOCKER_REPO = "${DOCKER_MR_REPO}"
+                        env.DOCKERFILE = "Simple_Dockerfile"
                     }
                     echo "Shortened Git Commit: ${env.DOCKER_TAG}"
                 }
-                sh "docker build -t ${DOCKER_IMAGE}:${env.DOCKER_TAG} -f Dockerfile --build-arg HOME=$HOME ."
-                sh "docker tag ${DOCKER_IMAGE}:${env.DOCKER_TAG} ${env.DOCKER_REPO}/${DOCKER_IMAGE}:${DOCKER_TAG}"
-                sh "echo ${NEXUS_PASSWORD} | docker login -u ${NEXUS_USERNAME} --password-stdin ${env.DOCKER_REPO}"
-                sh "docker push ${env.DOCKER_REPO}/${DOCKER_IMAGE}:${env.DOCKER_TAG}"
-            }
+            sh "docker build -t ${DOCKER_IMAGE}:${env.DOCKER_TAG} -f ${env.DOCKERFILE} ."
+            sh "docker tag ${DOCKER_IMAGE}:${env.DOCKER_TAG} ${env.DOCKER_REPO}/${DOCKER_IMAGE}:${DOCKER_TAG}"
+            sh "docker login -u ${NEXUS_USER} -p ${NEXUS_PASSWORD} ${env.DOCKER_REPO}"
+            sh "docker push ${env.DOCKER_REPO}/${DOCKER_IMAGE}:${env.DOCKER_TAG}"
+           }
 
         }
     }

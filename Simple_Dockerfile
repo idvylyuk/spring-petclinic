@@ -2,7 +2,7 @@ FROM eclipse-temurin:17-jre-alpine AS jre-builder
 
 WORKDIR /petclinic-app
 
-ARG JAR_FILE=target/*.jar
+ARG JAR_FILE=build/libs/*.jar
 COPY ${JAR_FILE} /petclinic-app/spring-app.jar
 
 EXPOSE 8080
