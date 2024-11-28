@@ -22,12 +22,12 @@ pipeline{
             steps{
                 sh 'printenv'
                 echo "===================== Running Checkstyle ====================="
-                sh './gradlew checkstyleMain checkstyleTest'
+                sh './gradlew checkstyleMain checkstyleTest --no-daemon'
                 archiveArtifacts artifacts: 'build/reports/checkstyle/main.html', fingerprint: true
                 echo "===================== Running Tests ====================="
-                sh "./gradlew test"
+                sh "./gradlew test --no-daemon"
                 echo "===================== Packaging ====================="
-                sh './gradlew build -x test'
+                sh './gradlew build -x test --no-daemon'
                 archiveArtifacts artifacts: "build/libs/*.jar", fingerprint: true
 
             }
