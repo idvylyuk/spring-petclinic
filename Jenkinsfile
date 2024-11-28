@@ -54,7 +54,7 @@ pipeline{
                 }
             sh "docker build -t ${DOCKER_IMAGE}:${env.DOCKER_TAG} -f ${env.DOCKERFILE} ."
             sh "docker tag ${DOCKER_IMAGE}:${env.DOCKER_TAG} ${env.DOCKER_REPO}/${DOCKER_IMAGE}:${DOCKER_TAG}"
-            sh "docker login -u ${NEXUS_USER} -p ${NEXUS_PASSWORD} ${env.DOCKER_REPO}"
+            sh "docker login -u ${NEXUS_USER} -p $NEXUS_PASSWORD ${env.DOCKER_REPO}"
             sh "docker push ${env.DOCKER_REPO}/${DOCKER_IMAGE}:${env.DOCKER_TAG}"
            }
 
