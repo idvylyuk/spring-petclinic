@@ -25,7 +25,7 @@ pipeline{
                 sh './gradlew checkstyleMain checkstyleTest'
                 archiveArtifacts artifacts: 'build/reports/checkstyle/main.html', fingerprint: true
                 echo "===================== Running Tests ====================="
-                sh "./gradlew test"
+                sh "./gradlew test --info --stacktrace"
                 echo "===================== Packaging ====================="
                 sh './gradlew build -x test'
                 archiveArtifacts artifacts: "build/libs/*.jar", fingerprint: true
@@ -63,6 +63,7 @@ pipeline{
     post{
         success{
             echo "========pipeline executed successfully ======="
+            echo "---> Docker build: ${DOCKER_IMAGE}:${env.DOCKER_TAG}"
         }
         failure{
             echo "========pipeline execution failed========"
