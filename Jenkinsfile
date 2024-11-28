@@ -63,6 +63,7 @@ pipeline{
     post{
         success{
             echo "========pipeline executed successfully ======="
+            echo "---> Docker build: ${DOCKER_IMAGE}:${env.DOCKER_TAG}"
         }
         failure{
             echo "========pipeline execution failed========"
