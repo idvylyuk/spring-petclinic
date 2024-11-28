@@ -55,7 +55,7 @@ pipeline{
             sh "docker tag ${DOCKER_IMAGE}:${env.DOCKER_TAG} ${env.DOCKER_REPO}/${DOCKER_IMAGE}:${DOCKER_TAG}"
             withCredentials([usernamePassword(credentialsId: 'nexus-creds', passwordVariable: 'password', usernameVariable: 'username')]) {
                 sh '''
-                    echo $password | docker login -u $username --password-stdin ${env.DOCKER_REPO}
+                    echo ${password} | docker login -u ${username} --password-stdin ${env.DOCKER_REPO}
                 '''
             }
 
@@ -64,7 +64,7 @@ pipeline{
            }
            post {
             always {
-                sh "docker system prune"
+                sh "docker system prune -y"
             }
            }
 
