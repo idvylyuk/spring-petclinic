@@ -77,7 +77,7 @@ pipeline{
         }
 
         stage("Deploy to prod") {
-            agent { label "agent"}
+            agent { label "prod"}
             when {
                 branch 'main'
             }
