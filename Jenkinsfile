@@ -66,7 +66,7 @@ pipeline{
                 always {
                     script {
                         try {
-                            sh "docker rmi \$(docker images | grep ${DOCKER_IMAGE} | awk '{print \$3}')"
+                            sh "docker rmi -f \$(docker images | grep ${DOCKER_IMAGE} | awk '{print \$3}')"
                         } catch (e) {
                             echo "An error occurred: ${e}"
                         }
@@ -74,6 +74,34 @@ pipeline{
                 }
             }
 
+        }
+
+        stage("Deploy to prod") {
+            agent { label "prod"}
+            when {
+                branch 'main'
+            }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'nexus-creds', passwordVariable: 'password', usernameVariable: 'username')]) {
+                     sh '''
+                        set +x
+                        echo $password | docker login -u $username --password-stdin $DOCKER_REPO
+                    '''
+                }
+                sh "docker pull ${env.DOCKER_REPO}/${DOCKER_IMAGE}:${env.DOCKER_TAG}"
+                def containerId = sh(script: "docker ps -q -f 'name=spring-petclinic'", returnStdout: true).trim()
+                if (containerId) {
+                    echo 'Stopping existing container...'
+                    sh "docker stop ${containerId}"
+                    sh "docker rm ${containerId}"
+                }
+                sh "docker run -d --name spring-petclinic -p 8080:8080 ${env.DOCKER_REPO}/${DOCKER_IMAGE}:${env.DOCKER_TAG}"
+            }
+        }
+        post {
+            always {
+                sh 'docker system prune -f'
+            }
         }
     }
     post{
