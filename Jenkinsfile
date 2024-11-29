@@ -77,7 +77,7 @@ pipeline{
         }
 
         stage("Deploy to prod") {
-            agent { label "prod"}
+            agent { label "agent"}
             when {
                 branch 'main'
             }
@@ -89,18 +89,20 @@ pipeline{
                     '''
                 }
                 sh "docker pull ${env.DOCKER_REPO}/${DOCKER_IMAGE}:${env.DOCKER_TAG}"
-                def containerId = sh(script: "docker ps -q -f 'name=spring-petclinic'", returnStdout: true).trim()
-                if (containerId) {
-                    echo 'Stopping existing container...'
-                    sh "docker stop ${containerId}"
-                    sh "docker rm ${containerId}"
+                script {
+                    def containerId = sh(script: "docker ps -q -f 'name=spring-petclinic'", returnStdout: true).trim()
+                    if (containerId) {
+                        echo 'Stopping existing container...'
+                        sh "docker stop ${containerId}"
+                        sh "docker rm ${containerId}"
+                    }
                 }
                 sh "docker run -d --name spring-petclinic -p 8080:8080 ${env.DOCKER_REPO}/${DOCKER_IMAGE}:${env.DOCKER_TAG}"
             }
-        }
-        post {
-            always {
-                sh 'docker system prune -f'
+            post {
+                always {
+                    sh 'docker system prune -f'
+                }
             }
         }
     }
