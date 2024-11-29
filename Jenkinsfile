@@ -1,12 +1,10 @@
 pipeline{
-    agent{
-        label "ubuntu-agent"
-    }
+    agent none
     environment {
-        NEXUS_URL = 'http://10.0.2.2:8081/repository/maven-central/'
+        NEXUS_URL = 'http://localhost:8081/repository/maven-central/'
         NEXUS_USER = "admin"
-        DOCKER_MR_REPO = "10.0.2.2:8082"
-        DOCKER_MAIN_REPO = "10.0.2.2:8083"
+        DOCKER_MR_REPO = "192.168.50.21:8083"
+        DOCKER_MAIN_REPO = "192.168.50.21:8082"
         DOCKER_IMAGE = "spring-petclinic"
 
     }
@@ -15,6 +13,7 @@ pipeline{
     }
     stages{
         stage("Test & Build"){
+            agent { label 'agent'}
             when {
                 changeRequest()
             }
@@ -33,6 +32,7 @@ pipeline{
         }
 
         stage("Docker build"){
+            agent { label 'agent'}
             when {
                 anyOf {
                     branch 'main'
