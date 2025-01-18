@@ -49,16 +49,8 @@ tasks.register('publishToNexus') {
 
 repositories {
   repositories {
-    maven {
-        url System.getenv("NEXUS_URL") ?: "http://localhost:8081/repository/maven-central/"
-        allowInsecureProtocol = true
-        credentials {
-            username = "admin"
-            password = System.getenv("NEXUS_PASSWORD")
-        }
-    }
-}
-
+    mavenCentral()
+  }
 }
 
 ext.checkstyleVersion = "10.20.0"

@@ -82,6 +82,9 @@ pipeline{
                 branch 'main'
             }
             steps {
+                script {
+                    env.DOCKER_REPO = "${DOCKER_MAIN_REPO}"
+                }
                 withCredentials([usernamePassword(credentialsId: 'nexus-creds', passwordVariable: 'password', usernameVariable: 'username')]) {
                      sh '''
                         set +x

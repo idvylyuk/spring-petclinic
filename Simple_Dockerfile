@@ -3,8 +3,14 @@ FROM eclipse-temurin:17-jre-alpine AS jre-builder
 WORKDIR /petclinic-app
 
 ARG JAR_FILE=build/libs/*.jar
+ENV JMX_AGENT_PORT=1234
+
 COPY ${JAR_FILE} /petclinic-app/spring-app.jar
 
-EXPOSE 8080
+RUN wget -O jmx_prometheus_javaagent.jar https://github.com/prometheus/jmx_exporter/releases/download/1.1.0/jmx_prometheus_javaagent-1.1.0.jar
 
-CMD ["java", "-jar", "/petclinic-app/spring-app.jar"]
+COPY monitoring/jmx_prometheus_config.yaml jmx-config.yaml
+
+EXPOSE 8080 ${JMX_AGENT_PORT}
+
+CMD ["sh", "-c", "java -javaagent:jmx_prometheus_javaagent.jar=${JMX_AGENT_PORT}:jmx-config.yaml -jar /petclinic-app/spring-app.jar"]

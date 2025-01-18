@@ -50,3 +50,15 @@ _site/
 *.css
 !petclinic.css
 .env
+*.jar
+*.log
+
+metrics.html
+
+
+# terraform files
+*.tfstate
+*.tfstate.backup
+*.tfvars
+*.terraform
+.terraform.lock.hcl
